@@ -26,14 +26,16 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 set(QT_USE_QTXML TRUE)
+find_package(X11 REQUIRED)
 find_package(QGLViewer REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
+find_package(cmake_modules REQUIRED)
 
 include_directories(${QGLVIEWER_INCLUDE_DIR}
 		    ${catkin_INCLUDE_DIRS} 
-		    ${EIGEN_INCLUDE_DIR}
+		    ${EIGEN3_INCLUDE_DIR}
 		    ${QT_INCLUDES} )
 
 # SSE flags
@@ -47,7 +49,6 @@ generate_messages(DEPENDENCIES)
 generate_dynamic_reconfigure_options(
   cfg/LSDSLAMViewerParams.cfg
 )
-
 
 # Sources files
 set(SOURCE_FILES         
@@ -74,6 +75,7 @@ target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${catkin_LIBRARIES}
 			     ${Boost_LIBRARIES}
 			     ${QT_LIBRARIES}
+			     csparse cxsparse X11
 			     GL glut GLU
 		     )
 

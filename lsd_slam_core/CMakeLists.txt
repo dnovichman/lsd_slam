@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(lsd_slam_core)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Set the build type. Options are:
 #  Coverage : w/ debug symbols, w/o optimization, w/ code-coverage
@@ -16,10 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   roscpp
   rosbag
+  #lsd_slam_viewer
 )
 
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(X11 REQUIRED)
+find_package(cmake_modules REQUIRED)
 include(cmake/FindG2O.cmake)
 include(cmake/FindSuiteParse.cmake)
 
@@ -34,15 +37,20 @@ message("-- G2O_INCLUDE_DIR : " ${G2O_INCLUDE_DIR})
 #add_definitions("-DHAVE_FABMAP")
 #set(FABMAP_LIB openFABMAP )
 
+set(lsd_slam_viewer_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../../../install/include") 
+
+message("jhfbvewhkfbkhewfkewh  ${lsd_slam_viewer_HEADERS}")
 generate_dynamic_reconfigure_options(
   cfg/LSDDebugParams.cfg
   cfg/LSDParams.cfg
 )
 
 catkin_package(
-  LIBRARIES lsdslam
-  DEPENDS Eigen SuiteSparse
-  CATKIN_DEPENDS libg2o 
+  LIBRARIES lsdslam #${PROJECT_NAME}
+  INCLUDE_DIRS ${lsd_slam_viewer_HEADERS}
+  #lsd_slam_viewer
+  DEPENDS Eigen3 SuiteSparse
+  CATKIN_DEPENDS libg2o
 )
 
 # SSE flags
@@ -86,7 +94,9 @@ set(SOURCE_FILES
 )
 
 include_directories(
+  ${lsd_slam_viewer_HEADERS}
   include
+  ${catkin_INCLUDE_DIRS} 
   ${EIGEN3_INCLUDE_DIR}
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
@@ -94,17 +104,16 @@ include_directories(
   ${CHOLMOD_INCLUDE_DIR} #Has been set by SuiteParse
 )
 
-
 # build shared library.
 add_library(lsdslam SHARED ${SOURCE_FILES})
-target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} csparse cxsparse )
+target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} csparse cxsparse X11)
 #rosbuild_link_boost(lsdslam thread)
-
+#add_dependencies(lsdslam lsd_slam_viewer_generate_messages_cpp)
 
 # build live ros node
 add_executable(live_slam src/main_live_odometry.cpp)
 target_link_libraries(live_slam lsdslam ${catkin_LIBRARIES} ${G2O_LIBRARIES})
-
+#add_dependencies(lsdslam lsd_slam_viewer_generate_messages_cpp)
 
 # build image node
 add_executable(dataset src/main_on_images.cpp)
