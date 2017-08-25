@@ -38,8 +38,8 @@ message("-- G2O_INCLUDE_DIR : " ${G2O_INCLUDE_DIR})
 #set(FABMAP_LIB openFABMAP )
 
 set(lsd_slam_viewer_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../../../install/include") 
+set(lsd_slam_viewer_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../../../devel/include") 
 
-message("jhfbvewhkfbkhewfkewh  ${lsd_slam_viewer_HEADERS}")
 generate_dynamic_reconfigure_options(
   cfg/LSDDebugParams.cfg
   cfg/LSDParams.cfg
